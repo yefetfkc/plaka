@@ -441,4 +441,12 @@ app.delete('/api/admin/users/:id', auth, adminOnly, (req, res) => {
 process.on('unhandledRejection', (e) => console.error('Yakalanmamış hata:', e && e.message ? e.message : e));
 process.on('uncaughtException', (e) => console.error('Yakalanmamış istisna:', e && e.message ? e.message : e));
 
+// Beklenmeyen hatalarda ziyaretçiye kodun iç ayrıntıları gösterilmez; ayrıntı yalnız sunucu günlüğüne yazılır
+app.use((err, req, res, next) => {
+    if (res.headersSent) return next(err);
+    const status = err.status || err.statusCode || 500;
+    if (status >= 500) console.error('Sunucu hatası:', err && err.message ? err.message : err);
+    res.status(status).json({ error: status === 400 ? "Geçersiz istek." : status === 413 ? "İstek çok büyük." : "Sunucu hatası." });
+});
+
 app.listen(PORT, () => console.log(`Sunucu ${PORT} portunda çalışıyor.`));

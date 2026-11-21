@@ -67,7 +67,7 @@ JavaScript · Node.js · Express · SQLite · JWT · bcrypt · node-cron · Helm
 
 ## Kendin çalıştır
 
-Gerekenler: Docker ve Docker Compose (ya da Node.js 18+).
+Gerekenler: Docker ve Docker Compose (ya da Node.js 22+).
 
 ```bash
 cp .env.example .env      # değerleri doldur
