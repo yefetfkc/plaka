@@ -83,7 +83,8 @@ tünel (ör. Cloudflare Tunnel) koy. Ayarlar (`.env`):
 | --- | --- |
 | `SECRET_KEY` | Oturumları imzalayan uzun, rastgele metin (en az 32 karakter). Yoksa uygulama başlamaz. |
 | `ADMIN_USERNAME` | Yönetici paneline girebilecek hesap. |
-| `ALLOWED_ORIGIN` | Uygulamanın genel adresi (CORS için). |
+| `ALLOWED_ORIGIN` | İsteğe bağlı. Uygulamaya başka bir adresten de erişilecekse o adres (CORS için). Uygulamanın kendi adresi her zaman kabul edilir. |
+| `TRUST_CLOUDFLARE` | Uygulama Cloudflare (ör. Cloudflare Tunnel) arkasındaysa `true`; deneme sınırı ziyaretçi adresini Cloudflare'den alır. Değilse boş bırak. |
 | `BACKUP_DIR` | Gecelik yedek klasörü (varsayılan `yedekler/`). |
 | `BACKUP_KEEP_DAYS` | Yedeklerin kaç gün saklanacağı (varsayılan `14`). |
 | `PORT` | Varsayılan `3000`. |

@@ -53,14 +53,18 @@ const recordFail = (username) => {
 
 // ---------------------------------------------------------------- uygulama
 const app = express();
+// Önünde aynı makinede ya da yerel ağda bir ters vekil (nginx, Caddy, Docker) varsa gerçek ziyaretçi
+// adresi X-Forwarded-For'dan alınır; doğrudan internetten gelen isteklerde bu başlığa güvenilmez.
+app.set('trust proxy', 'loopback, linklocal, uniquelocal');
 app.use(helmet({ contentSecurityPolicy: false }));
 
 const allowedOrigins = [process.env.ALLOWED_ORIGIN, 'http://localhost:3000', 'http://127.0.0.1:3000'];
-app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) callback(null, true);
-        else callback(new Error('CORS kuralları gereği bu isteğe izin verilmiyor.'));
-    }
+// Uygulamanın kendi adresinden gelen istekler her zaman kabul edilir; başka sitelere izin verilmez
+// (izin verilmeyen sitelere CORS başlığı gönderilmez, tarayıcı isteği kendisi engeller).
+app.use(cors((req, callback) => {
+    const origin = req.headers.origin;
+    const self = origin && [`http://${req.headers.host}`, `https://${req.headers.host}`].includes(origin);
+    callback(null, { origin: !origin || self || allowedOrigins.includes(origin) });
 }));
 
 app.use(express.json({ limit: '50kb' }));
@@ -79,7 +83,8 @@ app.use('/assets', express.static(path.join(__dirname, 'public', 'assets'), {
 app.use(express.static(path.join(__dirname, 'public'), { dotfiles: 'ignore', index: 'index.html', setHeaders: (res) => res.setHeader('Cache-Control', 'no-cache') }));
 
 // Gerçek ziyaretçi adresi: uygulama yalnız Cloudflare üzerinden erişilebilir, başlığı Cloudflare yazar.
-const clientKey = (req) => req.headers['cf-connecting-ip'] || req.ip;
+// Cloudflare arkasındaysan (TRUST_CLOUDFLARE=true) ziyaretçi adresi Cloudflare'in başlığından okunur
+const clientKey = (req) => (process.env.TRUST_CLOUDFLARE === 'true' && req.headers['cf-connecting-ip']) || req.ip;
 const authLimiter = rateLimit({
     keyGenerator: clientKey,
     windowMs: 15 * 60 * 1000,
