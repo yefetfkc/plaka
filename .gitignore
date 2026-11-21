@@ -1,0 +1,10 @@
+# Secrets and user data never go into the repository
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-*
+*.zip
+yedekler/
+node_modules/
+.DS_Store

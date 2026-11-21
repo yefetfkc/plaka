@@ -1,0 +1,11 @@
+services:
+  plaka-app:
+    build: .
+    container_name: plaka
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./veritabani.sqlite:/app/veritabani.sqlite
+      - ./yedekler:/app/yedekler

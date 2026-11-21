@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+veritabani.sqlite
+*.sqlite
+*.zip
+yedekler
+node_modules
+.git
